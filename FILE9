@@ -1,0 +1,39 @@
+import re
+with open("new.txt") as c:
+    allowedSymbols={'0':'ноль', '1':'один', '2':'два','3':'три', '4':'четыре', '5':'пять', '6':'шесть',
+                    '7': 'семь', '8': 'восемь', '9':'девять', 'A':'A', 'B':'B', 'C':'C', 'D': 'D',
+                    'E': 'E', 'F': 'F', 'a':'a', 'b':'b', 'c':'c', 'd':'d', 'e':'e', 'f':'f'} 
+    keys_symbols=list(allowedSymbols.keys())
+    one_line = re.split('[,. \s]+', c.readline()) #числа могут быть разделены по-разному, сохраняем их в список как строки
+    if '' in one_line and len(one_line)==1: #если в списке только пустой символ, то в файле ничего нет
+        print("Пустой файл")
+    lastNumber = 0 #последнее сохраненное число последовательности
+    MaxNumber= 0 #максимальное число последовательности
+    while True:
+        for i in one_line: #каждое число из списка обрабатываем 
+            res=re.findall(r'[0-9A-Fa-f]*[aA][0-9A-Fa-f]{2}', i) #проверяем, являются ли символы символами 16-ричного числа
+            if len(res)==1 and len(i)==len(res[0]): 
+                number=int(i, base=16)
+                if number<lastNumber: #проверяем, убывает ли последовательность
+                    lastNumber=number
+                else:                  #если нет, то выводим сразу максимальное число последовательности
+                    MaxNumber=number
+                    lastNumber=number
+                    print(hex(MaxNumber)[2::1])
+                    List=[]
+                    for i in range(len(hex(MaxNumber))): 
+                        N=hex(MaxNumber)[i]
+                        if N!='x':
+                            List.append(N)
+                    List.pop(0)
+                    List=list(dict.fromkeys(List)) #сохраняем цифры числа без повторений
+                    for j in List:
+                        print(allowedSymbols[j], end=',') #выводим цифры числа словами без повторений
+                    print('\n')
+        one_line = re.split('[,. \s]+', c.readline()) #читаем следующую строку из файла
+        if '' in one_line and len(one_line)==1: #конец файла
+            break
+if MaxNumber==0:
+    print("Нет нужных чисел")
+print("Конец.")
+
